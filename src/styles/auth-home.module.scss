@@ -1,0 +1,16 @@
+@import "./config.scss";
+
+.auth {
+    width: 100vw;
+    height: auto;
+    @include flex(center, center, 1rem, column);
+    font-size: 24px;
+    padding: 1rem;
+    span {
+        color: $pink-900;
+    }
+    a {
+        color: $pink-500;
+        text-decoration: underline;
+    }
+}

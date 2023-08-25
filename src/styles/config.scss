@@ -1,0 +1,58 @@
+// $pry-colors: (#934a5f, #57648c, #c2b4d6, #e5e5e5);
+// colors
+$pink-50: #fff1f3;
+$pink-100: #ffe3e7;
+$pink-200: #ffc0cb;
+$pink-300: #ffa2b3;
+$pink-400: #fe6e8b;
+$pink-500: #f83b66;
+$pink-600: #e51951;
+$pink-700: #c20e43;
+$pink-800: #a20f40;
+$pink-900: #8a113c;
+$pink-950: #4d041c;
+$gray-500: #6d868c;
+
+$pry-colors: (
+    $pink-50,
+    $pink-100,
+    $pink-200,
+    $pink-300,
+    $pink-400,
+    $pink-500,
+    $pink-600,
+    $pink-700,
+    $pink-800,
+    $pink-900,
+    $pink-950
+);
+
+@mixin grid($col, $row, $gap) {
+    display: grid;
+    grid-template-columns: $col;
+    grid-auto-rows: $row;
+    gap: $gap;
+}
+
+@mixin flex($ai, $jc, $gap, $fld: false) {
+    display: flex;
+    align-items: $ai;
+    justify-content: $jc;
+    gap: $gap;
+
+    @if ($fld != false) {
+        flex-direction: $fld;
+    }
+}
+
+@mixin media($prefix, $size) {
+    @media (#{$prefix}-width: $size) {
+        @content;
+    }
+}
+
+@mixin media-h($prefix, $size) {
+    @media (#{$prefix}-height: $size) {
+        @content;
+    }
+}
