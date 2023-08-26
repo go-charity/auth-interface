@@ -1,5 +1,3 @@
-import { should } from "chai";
-
 describe("Tests responsible for the register/sign-up endpoint", () => {
   it("Should validate login link", () => {
     cy.visit("/register");
@@ -232,6 +230,171 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
 
     // Submit the form again
     cy.get("@submit").click();
+  });
+  it("Should validate the output message based on success response code during the orphanage registeration process", () => {
+    cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
+      statusCode: 201,
+      data: {
+        message: "User created successfully",
+      },
+    });
+
+    // Submit the form
+    cy.submitOrphanageSignUpForm();
+
+    // Should display success message and redirect if response code is successful
+    // // Should contain success message
+    cy.contains(
+      "Your account have been successfully created, now proceed to verify your email address"
+    );
+
+    // // Should redirect to OTP verification page
+    cy.location("pathname").should("eq", "/otp");
+  });
+  it("Should validate the output message based on user exists error response code during the orphanage registeration process", () => {
+    cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
+      statusCode: 400,
+      data: {
+        message: "User already exists",
+      },
+    });
+
+    // Submit the form
+    cy.submitOrphanageSignUpForm();
+
+    // Should display success message and redirect if response code is successful
+    // // Should contain success message
+    cy.contains("User already exists");
+
+    // // Should redirect to OTP verification page
+    cy.location("pathname").should("eq", "/otp");
+  });
+  it("Should validate the output message based on server error response code during the orphanage registeration process", () => {
+    cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
+      statusCode: 500,
+      data: {
+        message: "Something occurres, please try again...",
+      },
+    });
+
+    // Submit the form
+    cy.submitOrphanageSignUpForm();
+
+    // Should display success message and redirect if response code is successful
+    // // Should contain success message
+    cy.contains("Something occured please try again");
+
+    // // Should redirect to OTP verification page
+    cy.location("pathname").should("eq", "/otp");
+  });
+  it("Should validate the donor sign up process form inputs on blur", () => {
+    cy.visit("/register");
+
+    // Get the 'sign in as an donor' options and the 'next' button, and click on them
+    cy.getByDataCyAttribute("donor_signup").as("donor_signup").click();
+    cy.getByDataCyAttribute("next_process").as("next_process").click();
+
+    // Verify we are in the section to sign up as an orphanage
+    cy.contains("You are signing up as a donor");
+
+    // Should validate each input field, they should all return error on an invalid input
+    cy.getByPlaceholder("Enter email address").as("email").blur();
+    cy.getByDataCyAttribute("email_error");
+    cy.contains("Email input must be a valid email address");
+
+    cy.getByPlaceholder("Enter password").as("password").blur();
+    cy.getByDataCyAttribute("password_error");
+    cy.contains("Password input must not be empty");
+
+    cy.getByPlaceholder("Confirm entered password")
+      .as("confirmPassword")
+      .blur();
+    cy.getByDataCyAttribute("confirm_password_error");
+    cy.contains(
+      "Confirm password input must not be empty, and must be same as password"
+    );
+
+    // Confirm passhowd input should return error if it's value isn't same as that of password
+    cy.get("@password").type("examp12");
+    cy.get("@confirmPassword").type("12htO");
+    cy.getByDataCyAttribute("confirm_password_error");
+    cy.contains(
+      "Confirm password input must not be empty, and must be same as password"
+    );
+
+    // Should validate each input field, they should NOT return error on a valid input
+    cy.get("@email").type("onukwilip@gmail.com");
+    cy.getByDataCyAttribute("email_error").should("not.exist");
+    cy.contains("Email input must be a valid email address").should(
+      "not.exist"
+    );
+
+    cy.get("@password").type("onukwilip12+_");
+    cy.getByDataCyAttribute("password_error").should("not.exist");
+    cy.contains("Password input must not be empty").should("not.exist");
+
+    cy.get("@confirmPassword").type("onukwilip12+_");
+    cy.getByDataCyAttribute("confirm_password_error").should("not.exist");
+    cy.contains(
+      "Confirm password input must not be empty, and must be same as password"
+    ).should("not.exist");
+  });
+  it("Should validate the donor sign up process, and form inputs on submission", () => {
+    cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
+      statusCode: 201,
+      data: {
+        message: "User created successfully",
+      },
+    });
+    cy.visit("/register");
+
+    // Get the 'sign in as an donor' option and the 'next' button, and click on them
+    cy.getByDataCyAttribute("donor_signup").as("donor_signup").click();
+    cy.getByDataCyAttribute("next_process").as("next_process").click();
+
+    // Verify we are in the section to sign up as an orphanage
+    cy.contains("You are signing up as a donor");
+
+    // Click the submit button
+    cy.getByDataCyAttribute("submit").contains("Next").as("submit").click();
+
+    // Should display input errors
+    cy.getByDataCyAttribute("email_error");
+    cy.getByDataCyAttribute("password_error");
+    cy.getByDataCyAttribute("confirm_password_error");
+
+    // Should display input error message
+    cy.contains("Email input must be a valid email address");
+    cy.contains("Password input must not be empty");
+    cy.contains(
+      "Confirm password input must not be empty, and must be same as password"
+    );
+
+    // Type valid parameters into the input fields
+    cy.getByPlaceholder("Enter email address")
+      .as("email")
+      .type("onukwilip@gmail.com");
+    cy.getByPlaceholder("Enter password").as("password").type("1234567");
+    cy.getByPlaceholder("Confirm entered password")
+      .as("confirmPassword")
+      .type("1234567");
+
+    // Should NOT display input errors
+    cy.getByDataCyAttribute("email_error").should("not.exist");
+    cy.getByDataCyAttribute("password_error").should("not.exist");
+    cy.getByDataCyAttribute("confirm_password_error").should("not.exist");
+
+    // Should NOT display input error message
+    cy.contains("Email input must be a valid email address").should(
+      "not.exist"
+    );
+    cy.contains("Password input must not be empty").should("not.exist");
+    cy.contains(
+      "Confirm password input must not be empty, and must be same as password"
+    ).should("not.exist");
+
+    // Submit the form again
+    cy.get("@submit").click();
 
     // Should contain success message
     cy.contains(
@@ -239,6 +402,62 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
     );
 
     // Should redirect to OTP verification page
+    cy.location("pathname").should("eq", "/otp");
+  });
+  it("Should validate the output message based on success response code during the donor registeration process", () => {
+    cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
+      statusCode: 201,
+      data: {
+        message: "User created successfully",
+      },
+    });
+
+    // Submit the form
+    cy.submitDonorSignUpForm();
+
+    // Should display success message and redirect if response code is successful
+    // // Should contain success message
+    cy.contains(
+      "Your account have been successfully created, now proceed to verify your email address"
+    );
+
+    // // Should redirect to OTP verification page
+    cy.location("pathname").should("eq", "/otp");
+  });
+  it("Should validate the output message based on user exists error response code during the donor registeration process", () => {
+    cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
+      statusCode: 400,
+      data: {
+        message: "User already exists",
+      },
+    });
+
+    // Submit the form
+    cy.submitDonorSignUpForm();
+
+    // Should display success message and redirect if response code is successful
+    // // Should contain success message
+    cy.contains("User already exists");
+
+    // // Should redirect to OTP verification page
+    cy.location("pathname").should("eq", "/otp");
+  });
+  it("Should validate the output message based on server error response code during the donor registeration process", () => {
+    cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
+      statusCode: 500,
+      data: {
+        message: "Something occurres, please try again...",
+      },
+    });
+
+    // Submit the form
+    cy.submitDonorSignUpForm();
+
+    // Should display success message and redirect if response code is successful
+    // // Should contain success message
+    cy.contains("Something occured please try again");
+
+    // // Should redirect to OTP verification page
     cy.location("pathname").should("eq", "/otp");
   });
 });

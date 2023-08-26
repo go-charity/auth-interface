@@ -65,3 +65,46 @@ Cypress.Commands.addQuery(
     };
   }
 );
+
+Cypress.Commands.add("submitOrphanageSignUpForm" as any, () => {
+  cy.visit("/register");
+
+  // Get the 'sign in as an orphanage' options and the 'next' button, and click on them
+  cy.getByDataCyAttribute("orphanage_signup").as("orphanage_signup").click();
+  cy.getByDataCyAttribute("next_process").as("next_process").click();
+
+  // Type valid parameters into the input fields
+  cy.getByPlaceholder("Enter government issued ID")
+    .as("governmentID")
+    .type("kk0uy7g1bHi8AS");
+  cy.getByPlaceholder("Enter email address")
+    .as("email")
+    .type("onukwilip@gmail.com");
+  cy.getByPlaceholder("Enter password").as("password").type("1234567");
+  cy.getByPlaceholder("Confirm entered password")
+    .as("confirmPassword")
+    .type("1234567");
+
+  // Submit the form
+  cy.getByDataCyAttribute("submit").contains("Next").as("submit").click();
+});
+
+Cypress.Commands.add("submitDonorSignUpForm" as any, () => {
+  cy.visit("/register");
+
+  // Get the 'sign in as an orphanage' options and the 'next' button, and click on them
+  cy.getByDataCyAttribute("donor_signup").as("donor_signup").click();
+  cy.getByDataCyAttribute("next_process").as("next_process").click();
+
+  // Type valid parameters into the input fields
+  cy.getByPlaceholder("Enter email address")
+    .as("email")
+    .type("onukwilip@gmail.com");
+  cy.getByPlaceholder("Enter password").as("password").type("1234567");
+  cy.getByPlaceholder("Confirm entered password")
+    .as("confirmPassword")
+    .type("1234567");
+
+  // Submit the form
+  cy.getByDataCyAttribute("submit").contains("Next").as("submit").click();
+});
