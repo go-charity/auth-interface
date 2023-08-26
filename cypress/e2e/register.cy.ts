@@ -1,4 +1,4 @@
-describe("Tests responsible for the register/sign-up endpoint", () => {
+describe("Test cases responsible for the register/sign-up endpoint", () => {
   it("Should validate login link", () => {
     cy.visit("/register");
 
@@ -9,6 +9,7 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
     // Should redirect to the register page
     cy.location("pathname").should("eq", "/login");
   });
+
   it("Should validate sign-up options", () => {
     cy.visit("/register");
 
@@ -107,6 +108,7 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
       .should("have.attr", "class")
       .and("not.match", /active/);
   });
+
   it("Should validate the orphanage sign up process form inputs on blur", () => {
     cy.visit("/register");
 
@@ -167,6 +169,7 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
       "Confirm password input must not be empty, and must be same as password"
     ).should("not.exist");
   });
+
   it("Should validate the orphanage sign up process, and form inputs on submission", () => {
     cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
       statusCode: 201,
@@ -231,16 +234,22 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
     // Submit the form again
     cy.get("@submit").click();
   });
+
   it("Should validate the output message based on success response code during the orphanage registeration process", () => {
     cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
       statusCode: 201,
       data: {
         message: "User created successfully",
       },
-    });
+    }).as("sendRequest");
 
     // Submit the form
     cy.submitOrphanageSignUpForm();
+
+    // Verify if the endpoint was called
+    cy.wait("@sendRequest").then((res) => {
+      expect(res.response?.statusCode).to.eq(201);
+    });
 
     // Should display success message and redirect if response code is successful
     // // Should contain success message
@@ -251,16 +260,22 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
     // // Should redirect to OTP verification page
     cy.location("pathname").should("eq", "/otp");
   });
+
   it("Should validate the output message based on user exists error response code during the orphanage registeration process", () => {
     cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
       statusCode: 400,
       data: {
         message: "User already exists",
       },
-    });
+    }).as("sendRequest");
 
     // Submit the form
     cy.submitOrphanageSignUpForm();
+
+    // Verify if the endpoint was called
+    cy.wait("@sendRequest").then((res) => {
+      expect(res.response?.statusCode).to.eq(400);
+    });
 
     // Should display success message and redirect if response code is successful
     // // Should contain success message
@@ -269,24 +284,31 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
     // // Should redirect to OTP verification page
     cy.location("pathname").should("eq", "/otp");
   });
+
   it("Should validate the output message based on server error response code during the orphanage registeration process", () => {
     cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
       statusCode: 500,
       data: {
         message: "Something occurres, please try again...",
       },
-    });
+    }).as("sendRequest");
 
     // Submit the form
     cy.submitOrphanageSignUpForm();
 
+    // Verify if the endpoint was called
+    cy.wait("@sendRequest").then((res) => {
+      expect(res.response?.statusCode).to.eq(500);
+    });
+
     // Should display success message and redirect if response code is successful
     // // Should contain success message
-    cy.contains("Something occured please try again");
+    cy.contains("Something occured. Please try again");
 
     // // Should redirect to OTP verification page
     cy.location("pathname").should("eq", "/otp");
   });
+
   it("Should validate the donor sign up process form inputs on blur", () => {
     cy.visit("/register");
 
@@ -339,6 +361,7 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
       "Confirm password input must not be empty, and must be same as password"
     ).should("not.exist");
   });
+
   it("Should validate the donor sign up process, and form inputs on submission", () => {
     cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
       statusCode: 201,
@@ -404,16 +427,22 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
     // Should redirect to OTP verification page
     cy.location("pathname").should("eq", "/otp");
   });
+
   it("Should validate the output message based on success response code during the donor registeration process", () => {
     cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
       statusCode: 201,
       data: {
         message: "User created successfully",
       },
-    });
+    }).as("sendRequest");
 
     // Submit the form
     cy.submitDonorSignUpForm();
+
+    // Verify if the endpoint was called
+    cy.wait("@sendRequest").then((res) => {
+      expect(res.response?.statusCode).to.eq(201);
+    });
 
     // Should display success message and redirect if response code is successful
     // // Should contain success message
@@ -424,16 +453,22 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
     // // Should redirect to OTP verification page
     cy.location("pathname").should("eq", "/otp");
   });
+
   it("Should validate the output message based on user exists error response code during the donor registeration process", () => {
     cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
       statusCode: 400,
       data: {
         message: "User already exists",
       },
-    });
+    }).as("sendRequest");
 
     // Submit the form
     cy.submitDonorSignUpForm();
+
+    // Verify if the endpoint was called
+    cy.wait("@sendRequest").then((res) => {
+      expect(res.response?.statusCode).to.eq(400);
+    });
 
     // Should display success message and redirect if response code is successful
     // // Should contain success message
@@ -442,20 +477,26 @@ describe("Tests responsible for the register/sign-up endpoint", () => {
     // // Should redirect to OTP verification page
     cy.location("pathname").should("eq", "/otp");
   });
+
   it("Should validate the output message based on server error response code during the donor registeration process", () => {
     cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/register`, {
       statusCode: 500,
       data: {
         message: "Something occurres, please try again...",
       },
-    });
+    }).as("sendRequest");
 
     // Submit the form
     cy.submitDonorSignUpForm();
 
+    // Verify if the endpoint was called
+    cy.wait("@sendRequest").then((res) => {
+      expect(res.response?.statusCode).to.eq(500);
+    });
+
     // Should display success message and redirect if response code is successful
     // // Should contain success message
-    cy.contains("Something occured please try again");
+    cy.contains("Something occured. Please try again");
 
     // // Should redirect to OTP verification page
     cy.location("pathname").should("eq", "/otp");

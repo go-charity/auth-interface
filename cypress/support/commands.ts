@@ -108,3 +108,8 @@ Cypress.Commands.add("submitDonorSignUpForm" as any, () => {
   // Submit the form
   cy.getByDataCyAttribute("submit").contains("Next").as("submit").click();
 });
+
+Cypress.Commands.add("submitOTPForm" as any, () => {
+  cy.getByPlaceholder("Enter OTP").type("981082");
+  cy.getByDataCyAttribute("verify_otp").contains("Verify").click();
+});

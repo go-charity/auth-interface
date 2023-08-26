@@ -5,9 +5,7 @@ const access_token =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlByaW5jZSBPbnVrd2lsaSIsImlhdCI6MTUxNjIzOTAyMn0.VDAS_tMGDZj_6IlRfWvcQtG8gOV4wHHtqHsmt7VAKP8";
 const refresh_token = "c867a10e-3051-4440-b3c1-979457c4b538";
 
-// beforeEach(() => {});
-
-describe("Tests responsible for the Login endpoint and it's components", () => {
+describe("Test cases responsible for the Login endpoint and it's components", () => {
   it("Should validate sign-up link", () => {
     cy.visit("/login");
 
@@ -70,7 +68,7 @@ describe("Tests responsible for the Login endpoint and it's components", () => {
       headers: {
         "Set-Cookie": `access_token=${access_token}; refresh_token=${refresh_token}`,
       },
-    });
+    }).as("sendRequest");
 
     cy.visit("/login");
 
@@ -111,6 +109,11 @@ describe("Tests responsible for the Login endpoint and it's components", () => {
     // Submit the validated form
     cy.get("@loginBtn").click();
 
+    // Verify if the endpoint was called
+    cy.wait("@sendRequest").then((res) => {
+      expect(res.response?.statusCode).to.eq(200);
+    });
+
     // Form inputs should be reset
     cy.get("@email").should("have.value", "");
     cy.get("@password").should("have.value", "");
@@ -130,7 +133,7 @@ describe("Tests responsible for the Login endpoint and it's components", () => {
       data: {
         message: "Invalid username or password",
       },
-    });
+    }).as("sendRequest");
 
     cy.visit("/login");
 
@@ -149,8 +152,51 @@ describe("Tests responsible for the Login endpoint and it's components", () => {
     // Submit the validated form
     cy.get("@loginBtn").click();
 
+    // Verify if the endpoint was called
+    cy.wait("@sendRequest").then((res) => {
+      expect(res.response?.statusCode).to.eq(401);
+    });
+
     // Should display error message
     cy.get("form").contains("Invalid username or password");
+
+    // Form inputs should retain their values
+    cy.get("@email").should("have.value", "onukwilip@gmail.com");
+    cy.get("@password").should("have.value", "onukwilip12+_");
+  });
+
+  it("Should validate the output message if there is a server error", () => {
+    cy.intercept("POST", `${process.env.AUTH_BACKEND_HOST}/v1/login`, {
+      statusCode: 500,
+      data: {
+        message: "Something occurred",
+      },
+    }).as("sendRequest");
+
+    cy.visit("/login");
+
+    cy.getByPlaceholder("Enter your email").as("email");
+    cy.getByPlaceholder("Enter your password").as("password");
+
+    // Get the submission button
+    cy.get("form")
+      .findByDataCyAttribute("submit")
+      .contains("Login")
+      .as("loginBtn");
+
+    cy.get("@email").type("onukwilip@gmail.com");
+    cy.get("@password").type("onukwilip12+_");
+
+    // Submit the validated form
+    cy.get("@loginBtn").click();
+
+    // Verify if the endpoint was called
+    cy.wait("@sendRequest").then((res) => {
+      expect(res.response?.statusCode).to.eq(500);
+    });
+
+    // Should display error message
+    cy.get("form").contains("Something occurred. Please try again");
 
     // Form inputs should retain their values
     cy.get("@email").should("have.value", "onukwilip@gmail.com");

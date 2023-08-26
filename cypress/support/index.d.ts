@@ -34,6 +34,11 @@ declare global {
        * @example cy.submitDonorSignUpForm()
        */
       submitDonorSignUpForm(): Chainable<JQuery<HTMLElement>>;
+
+      /**
+       * Custom command to submit the OTP form during OTP verification
+       */
+      submitOTPForm(): Chainable<JQuery<HTMLElement>>;
     }
   }
 }
