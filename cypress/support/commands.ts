@@ -66,6 +66,14 @@ Cypress.Commands.addQuery(
   }
 );
 
+Cypress.Commands.addQuery("findByPlaceholder" as any, function (placeholder) {
+  const getFn = cy.now("find", `[placeholder="${placeholder}"]`);
+
+  return (subject) => {
+    return (getFn as any)(subject);
+  };
+});
+
 Cypress.Commands.add("submitOrphanageSignUpForm" as any, () => {
   cy.visit("/register");
 
@@ -113,3 +121,13 @@ Cypress.Commands.add("submitOTPForm" as any, () => {
   cy.getByPlaceholder("Enter OTP").type("981082");
   cy.getByDataCyAttribute("verify_otp").contains("Verify").click();
 });
+
+Cypress.Commands.add(
+  "blurMUIInput" as any,
+  function (subject, outerSubject?: any) {
+    cy.get(subject as string)
+      .parent()
+      .click({ force: true });
+    cy.get(outerSubject || "body").click({ force: true });
+  }
+);

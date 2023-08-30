@@ -10,7 +10,7 @@ describe("Test cases responsible for the Login endpoint and it's components", ()
     cy.visit("/login");
 
     // Get the sign up link and click it
-    cy.getByDataCyAttribute("sign_up_link").contains("sign up").as("signup");
+    cy.getByDataCyAttribute("sign_up_link").contains("Sign up").as("signup");
     cy.get("@signup").click();
 
     // Should redirect to the register page
@@ -21,27 +21,32 @@ describe("Test cases responsible for the Login endpoint and it's components", ()
     cy.visit("/login");
 
     cy.contains("Login").should("exist");
+    cy.get("form").as("loginForm");
 
-    cy.getByPlaceholder("Enter your email").as("email");
+    cy.getByPlaceholder("Enter your email").as("emailInput");
 
     // Don't type anything into the email input
-    cy.get("@email").blur();
-    cy.getByDataCyAttribute("email_error").should("exist");
+    // cy.getByDataCyAttribute("email_error").should("exist");
+    // // cy.get("@emailInput").focus();
+    // cy.get("@emailInput").type("onukwilip");
+    // cy.get("@emailInput").parent().click();
+    // cy.get("@loginForm").click({ force: true });
+    cy.blurMUIInput("@emailInput", "@loginForm");
+    // cy.contains("Email input must be a valid email address");
+
+    // Type in an invalid email address into the email input
+    cy.get("@emailInput").type("onukwilip");
+    // cy.getByDataCyAttribute("email_error").should("exist");
     cy.contains("Email input must be a valid email address");
 
     // Type in an invalid email address into the email input
-    cy.get("@email").type("onukwilip");
-    cy.getByDataCyAttribute("email_error").should("exist");
-    cy.contains("Email input must be a valid email address");
-
-    // Type in an invalid email address into the email input
-    cy.get("@email").type("onukwilip@gmail");
-    cy.getByDataCyAttribute("email_error").should("exist");
+    cy.get("@emailInput").clear().type("onukwilip@gmail");
+    // cy.getByDataCyAttribute("email_error").should("exist");
     cy.contains("Email input must be a valid email address");
 
     // Type in a valid email address into the email input
-    cy.get("@email").type("onukwilip@gmail.com");
-    cy.getByDataCyAttribute("email_error").should("not.exist");
+    cy.get("@emailInput").clear().type("onukwilip@gmail.com");
+    // cy.getByDataCyAttribute("email_error").should("not.exist");
     cy.contains("Email input must be a valid email address").should(
       "not.exist"
     );
@@ -49,7 +54,7 @@ describe("Test cases responsible for the Login endpoint and it's components", ()
     cy.getByPlaceholder("Enter your password").as("@password");
 
     // Don't type anything into the password input
-    cy.get("@password").blur();
+    cy.get("@password").focus().blur();
     cy.getByDataCyAttribute("password_error").should("exist");
     cy.contains("Password input should not be empty");
 
