@@ -4,9 +4,11 @@
     width: 100vw;
     height: 100vh;
     overflow-x: hidden;
+    overflow-y: auto;
     .register-section {
         width: 100%;
-        position: absolute;
+        position: relative;
+        // position: absolute;
         height: 100%;
         @include flex(center, center, 2rem, row-reverse);
         padding: 2rem;
@@ -40,6 +42,7 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba($pink-900, 0.4);
             background: white;
+            // margin: 2rem 0;
             @include flex(center, center, 2rem, column);
             .logo_container {
                 @include flex(center, center, 0.5rem, column);
@@ -53,7 +56,7 @@
                 width: 100%;
                 @include flex(center, center, 0.7rem, column);
                 & > * {
-                    width: 80%;
+                    width: 100%;
                 }
             }
             & > .actions {
@@ -84,7 +87,7 @@
             }
         }
         .bg {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             background: url(../assets/images/donation-bg-2.jpg);
@@ -117,16 +120,27 @@
                 }
             }
         }
+        @include media-h(max, 720px) {
+            justify-content: start;
+            min-height: 100vh;
+            height: auto;
+            .bg {
+                height: 100%;
+            }
+        }
     }
 }
 
 .customer-type-section {
     @include flex(center, center, 0.5rem, column);
+    width: 100%;
     h2 {
         color: $pink-900;
+        text-align: center;
     }
     .customer_type_container {
         @include flex(center, space-between, 1rem);
+        width: 100%;
         .customer_type {
             @include flex(center, center, 0.5rem, column);
             padding: 1rem;
@@ -163,6 +177,34 @@
                 span {
                     color: white;
                 }
+            }
+        }
+    }
+}
+.signup_form_section {
+    width: 100%;
+    @include flex(center, center, 0.7rem, column);
+    h2 {
+        color: $pink-900;
+        text-align: center;
+    }
+    & > * {
+        width: 80%;
+        max-width: 500px;
+    }
+    .action {
+        width: 100%;
+        @include flex(center, center, auto);
+        button {
+            color: $pink-500;
+            border-color: $pink-300;
+            &:hover {
+                background: rgba($pink-300, 0.2);
+            }
+            &[disabled] {
+                border-color: lightgray;
+                color: lightgray;
+                cursor: no-drop;
             }
         }
     }

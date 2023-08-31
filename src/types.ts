@@ -19,3 +19,8 @@ export type SignupSectionBasePropsType = {
     React.SetStateAction<boolean>
   >;
 };
+
+export type OTPConfigType = {
+  email: string;
+  mode: "login" | "registeration" | "changePassword";
+};

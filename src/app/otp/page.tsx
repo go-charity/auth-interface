@@ -1,7 +1,13 @@
 import React from "react";
+import css from "@/styles/OTP.module.scss";
+import OTP from "@/components/OTP";
 
-const OTP = () => {
-  return <section>OTP</section>;
+const OTPPage = () => {
+  return (
+    <section className={css["otp-page"]}>
+      <OTP />
+    </section>
+  );
 };
 
-export default OTP;
+export default OTPPage;
