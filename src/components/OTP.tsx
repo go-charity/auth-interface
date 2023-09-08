@@ -45,6 +45,10 @@ const OTP = () => {
   const sendOTPToServerBody = {
     email: emailToValidate,
   };
+  const verifyOTPOnServerRequestBody = {
+    email: emailToValidate,
+    otp: OTPValue,
+  };
 
   const {
     sendRequest: sendOTPToServer,
@@ -71,7 +75,7 @@ const OTP = () => {
       url: `/v1/otp/verify`,
       method: "POST",
       headers: { mode: "login" },
-      data: { email: emailToValidate, otp: window.btoa(OTPValue as string) },
+      data: verifyOTPOnServerRequestBody,
     },
   });
 
@@ -91,6 +95,7 @@ const OTP = () => {
       );
   };
   const verifyOTP = async () => {
+    verifyOTPOnServerRequestBody.otp = window.btoa(OTPValue as string);
     await verifyOTPOnServer(() => {
       if (otpMode === "login" || otpMode === "registeration")
         router.replace("/");

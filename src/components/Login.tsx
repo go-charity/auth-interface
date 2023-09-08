@@ -46,6 +46,8 @@ const Login = () => {
     defaultValue: "",
   });
 
+  const loginUserRequestBody = { email: email, password: password };
+
   const {
     sendRequest: loginUser,
     loading,
@@ -59,7 +61,7 @@ const Login = () => {
     options: {
       url: `/v1/login`,
       method: "POST",
-      data: { email: email, password: window.btoa(password as string) },
+      data: loginUserRequestBody,
     },
   });
 
@@ -80,6 +82,7 @@ const Login = () => {
 
     if (!formIsValid) return executeBlurHandlers();
 
+    loginUserRequestBody.password = window.btoa(password as string);
     await loginUser(
       (res) => {
         if (res?.status === 200) {
