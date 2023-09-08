@@ -3,7 +3,15 @@ import React, { FC, useEffect, useState } from "react";
 import css from "@/styles/Register.module.scss";
 import Image from "next/image";
 import logo from "@/assets/images/logo.png";
-import { TextField, Checkbox, Button } from "@mui/material";
+import {
+  TextField,
+  Checkbox,
+  Button,
+  Snackbar,
+  Alert,
+  Slide,
+  SnackbarCloseReason,
+} from "@mui/material";
 import Link from "next/link";
 import { useForm, useInput } from "use-manage-form";
 import {
@@ -14,6 +22,9 @@ import {
 } from "@/types";
 import { SignUpSectionClass } from "@/utils/utils";
 import { useRouter } from "next/navigation";
+import useAjaxRequest from "use-ajax-request";
+import axios from "axios";
+import { authBackendInstance } from "@/utils/interceptors";
 
 const CustomerTypeSection: FC<SignupSectionBasePropsType> = ({
   signupDetails,
@@ -70,6 +81,7 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
   updateSignUpDetails,
 }) => {
   const router = useRouter();
+  const [showSnackBar, setShowSnackBar] = useState(false);
 
   const {
     value: governmentID,
@@ -156,18 +168,75 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
       resetConfirmPassword,
     ],
     validateOptions: () =>
-      governmentIDisValid &&
+      (signupDetails.customertype === "orphanage"
+        ? governmentIDisValid
+        : true) &&
       emailisValid &&
       passwordisValid &&
       confirmPasswordisValid,
   });
 
-  const submitHandler: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const {
+    sendRequest: registerUser,
+    loading,
+    error,
+    data,
+  } = useAjaxRequest<{
+    otp_access_token: string;
+  }>({
+    instance: authBackendInstance,
+    options: {
+      url: `/v1/register`,
+      method: "POST",
+      data: {
+        email: email,
+        password: window.btoa(password as string),
+        government_ID: governmentID || "",
+        user_type: signupDetails.customertype,
+      },
+    },
+  });
+
+  const closeSnackBar = (_: any, reason: SnackbarCloseReason) => {
+    if (reason === "clickaway") return;
+
+    setShowSnackBar(false);
+  };
+
+  const submitHandler: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
-    if (!formIsValid) return executeBlurHandlers();
+    if (!formIsValid) {
+      console.log("Invalid");
+      return executeBlurHandlers();
+    }
 
-    router.replace("/otp");
+    await registerUser(
+      (res) => {
+        if (res?.status === 201) {
+          // Display the popup info
+          setShowSnackBar(true);
+
+          window.sessionStorage.setItem(
+            "otpConfig",
+            window.btoa(
+              JSON.stringify({
+                email: email,
+                mode: "registeration",
+              })
+            )
+          );
+          // Reset the form values
+          reset();
+          // redirect to the OTP page
+          router.replace("/otp");
+        }
+      },
+      (err) => {
+        // Display the popup info
+        setShowSnackBar(true);
+      }
+    );
   };
 
   useEffect(() => {
@@ -288,9 +357,26 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
           }
           onBlur={onConfirmPasswordBlur as any}
         />
+        <Snackbar
+          open={showSnackBar}
+          autoHideDuration={6000}
+          onClose={closeSnackBar}
+          TransitionComponent={Slide}
+        >
+          <Alert
+            onClose={closeSnackBar as any}
+            severity={data ? "success" : "error"}
+          >
+            {data
+              ? "User created in successfully"
+              : typeof error === "object" && error?.response?.status === 409
+              ? `User already exists!`
+              : "Something went wrong, please try again"}
+          </Alert>
+        </Snackbar>
         <div className={css.action}>
-          <Button variant="outlined" type="submit">
-            Continue
+          <Button variant="outlined" type="submit" disabled={loading}>
+            {loading ? "Signing up..." : "Continue"}
           </Button>
         </div>
       </form>

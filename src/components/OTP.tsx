@@ -3,10 +3,20 @@ import React, { useEffect, useState } from "react";
 import css from "@/styles/OTP.module.scss";
 import logo from "@/assets/images/logo.png";
 import otpIcon from "@/assets/images/otp-icon-light.png";
-import { Button, TextField } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Slide,
+  Snackbar,
+  SnackbarCloseReason,
+  TextField,
+} from "@mui/material";
 import { useInput } from "use-manage-form";
 import { useRouter } from "next/navigation";
 import { OTPConfigType } from "@/types";
+import useAjaxRequest from "use-ajax-request";
+import { authBackendInstance } from "@/utils/interceptors";
+import { useTimer } from "use-timer";
 
 const OTP = () => {
   const {
@@ -18,20 +28,109 @@ const OTP = () => {
     defaultValue: "",
   });
   const [emailToValidate, setEmailToValidate] = useState("");
+  const [otpMode, setOtpMode] = useState<
+    ("login" | "registeration" | "changePassword") | undefined
+  >();
+  const [showCreeatedOTPSnackBar, setShowCreatedOTPSnackBar] = useState(false);
+  const [showValidatedOTPSnackBar, setShowValidatedOTPSnackBar] =
+    useState(false);
+
+  const { time, start, reset, status } = useTimer({
+    timerType: "DECREMENTAL",
+    initialTime: 300,
+    endTime: 0,
+  });
   const router = useRouter();
+
+  const sendOTPToServerBody = {
+    email: emailToValidate,
+  };
+
+  const {
+    sendRequest: sendOTPToServer,
+    loading: creatingOTP,
+    data: createdOTP,
+  } = useAjaxRequest<string>({
+    instance: authBackendInstance,
+    options: {
+      url: `/v1/otp/create`,
+      method: "POST",
+      headers: { mode: "login" },
+      data: sendOTPToServerBody,
+    },
+  });
+
+  const {
+    sendRequest: verifyOTPOnServer,
+    loading: verifyingOTP,
+    data: verifiedOTP,
+    error: errorVerifyingOTP,
+  } = useAjaxRequest<string>({
+    instance: authBackendInstance,
+    options: {
+      url: `/v1/otp/verify`,
+      method: "POST",
+      headers: { mode: "login" },
+      data: { email: emailToValidate, otp: window.btoa(OTPValue as string) },
+    },
+  });
+
+  const sendOTP = async () => {
+    if (!creatingOTP && status === "STOPPED")
+      await sendOTPToServer(
+        (res) => {
+          if (res?.status === 201) {
+            setShowCreatedOTPSnackBar(true);
+            reset();
+            start();
+          }
+        },
+        (err) => {
+          setShowCreatedOTPSnackBar(true);
+        }
+      );
+  };
+  const verifyOTP = async () => {
+    await verifyOTPOnServer(() => {
+      if (otpMode === "login" || otpMode === "registeration")
+        router.replace("/");
+      //TODO: Implement algorithm for if mode was set to 'changePassword'
+    });
+    setShowValidatedOTPSnackBar(true);
+  };
+
+  const closeCreatedOTPSnackBar = (_: any, reason: SnackbarCloseReason) => {
+    if (reason === "clickaway") return;
+
+    setShowCreatedOTPSnackBar(false);
+  };
+  const closeValidatedOTPSnackBar = (_: any, reason: SnackbarCloseReason) => {
+    if (reason === "clickaway") return;
+
+    setShowValidatedOTPSnackBar(false);
+  };
 
   useEffect(() => {
     const otpConfig = sessionStorage.getItem("otpConfig");
-    if (!otpConfig) {
+    if (
+      !otpConfig ||
+      !(
+        JSON.parse(window.atob(otpConfig)).email &&
+        JSON.parse(window.atob(otpConfig)).mode
+      )
+    ) {
       alert("Invalid configuration!");
       return router.replace("/");
     }
 
-    const parsedOTPConfig: OTPConfigType = JSON.parse(
-      window.atob(otpConfig || "")
-    );
+    const parsedOTPConfig: OTPConfigType = JSON.parse(window.atob(otpConfig));
 
     setEmailToValidate(parsedOTPConfig.email);
+    setOtpMode(parsedOTPConfig.mode);
+
+    // Send the token for the first time
+    sendOTPToServerBody.email = parsedOTPConfig.email;
+    sendOTP();
   }, []);
 
   return (
@@ -77,12 +176,62 @@ const OTP = () => {
             onBlur={onOTPBlur as any}
             className={css.input}
           />
-          <Button variant="contained">Verify</Button>
+          <Button
+            variant="contained"
+            onClick={verifyOTP}
+            disabled={verifyingOTP}
+          >
+            {verifyingOTP ? "Verifying..." : "Verify"}
+          </Button>
         </form>
         <span>
-          Didn't get the code? <a>Resend it</a>
+          {status === "STOPPED" ? (
+            <>
+              Didn't get the code?{" "}
+              {creatingOTP ? (
+                "sending your OTP..."
+              ) : (
+                <a onClick={sendOTP}>Resend it</a>
+              )}
+            </>
+          ) : (
+            `You will be able to resend your OTP in the next ${time} seconds`
+          )}
         </span>
       </div>
+      <Snackbar
+        open={showCreeatedOTPSnackBar}
+        autoHideDuration={6000}
+        onClose={closeCreatedOTPSnackBar}
+        TransitionComponent={Slide}
+      >
+        <Alert
+          onClose={closeCreatedOTPSnackBar as any}
+          severity={createdOTP ? "success" : "error"}
+        >
+          {createdOTP
+            ? `OTP sent to '${emailToValidate}' successfully`
+            : "Something went wrong, please try again"}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={showValidatedOTPSnackBar}
+        autoHideDuration={6000}
+        onClose={closeValidatedOTPSnackBar}
+        TransitionComponent={Slide}
+      >
+        <Alert
+          onClose={closeValidatedOTPSnackBar as any}
+          severity={verifiedOTP ? "success" : "error"}
+        >
+          {verifiedOTP
+            ? `Email address verified successfully`
+            : typeof errorVerifyingOTP === "object" &&
+              errorVerifyingOTP?.response?.status === 400
+            ? "Invalid OTP"
+            : "Something went wrong, please try again"}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

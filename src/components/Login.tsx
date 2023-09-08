@@ -3,11 +3,24 @@ import React, { useState } from "react";
 import css from "@/styles/Login.module.scss";
 import Image from "next/image";
 import logo from "@/assets/images/logo.png";
-import { TextField, Checkbox, Button } from "@mui/material";
+import {
+  TextField,
+  Checkbox,
+  Button,
+  Snackbar,
+  Alert,
+  SnackbarCloseReason,
+  Slide,
+} from "@mui/material";
 import Link from "next/link";
-import { useInput } from "use-manage-form";
+import { useForm, useInput } from "use-manage-form";
+import useAjaxRequest from "use-ajax-request";
+import { useRouter } from "next/navigation";
+import { authBackendInstance } from "@/utils/interceptors";
 
 const Login = () => {
+  const router = useRouter();
+  const [showSnackBar, setShowSnackBar] = useState(false);
   const {
     value: email,
     isValid: emailisValid,
@@ -33,6 +46,57 @@ const Login = () => {
     defaultValue: "",
   });
 
+  const {
+    sendRequest: loginUser,
+    loading,
+    error,
+    data,
+  } = useAjaxRequest<{
+    access_token: string;
+    refresh_token: string;
+  }>({
+    instance: authBackendInstance,
+    options: {
+      url: `/v1/login`,
+      method: "POST",
+      data: { email: email, password: window.btoa(password as string) },
+    },
+  });
+
+  const { formIsValid, executeBlurHandlers, reset } = useForm({
+    blurHandlers: [onEmailBlur, onPasswordBlur],
+    resetHandlers: [resetEmail, resetPassword],
+    validateOptions: () => emailisValid && passwordisValid,
+  });
+
+  const closeSnackBar = (_: any, reason: SnackbarCloseReason) => {
+    if (reason === "clickaway") return;
+
+    setShowSnackBar(false);
+  };
+
+  const submitHandler: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
+
+    if (!formIsValid) return executeBlurHandlers();
+
+    await loginUser(
+      (res) => {
+        if (res?.status === 200) {
+          setShowSnackBar(true);
+          reset();
+          router.push(
+            "/" /*`https://dashboard.${process.env.NEXT_PUBLIC_API_DOMAIN}.net.ng`*/
+          );
+        }
+      },
+      (err) => {
+        setShowSnackBar(true);
+        if (err?.response?.status === 403) router.push("/otp");
+      }
+    );
+  };
+
   return (
     <div className={css["login-section"]}>
       <div className={css.left}>
@@ -48,7 +112,7 @@ const Login = () => {
           <Image width={70} height={70} src={logo} alt="logo" />
           <span>Login</span>
         </div>
-        <form className={css.form}>
+        <form className={css.form} onSubmit={submitHandler}>
           <TextField
             id="email"
             name="email"
@@ -98,9 +162,29 @@ const Login = () => {
             />
             <span>Remember me</span>
           </label>
-
+          <Snackbar
+            open={showSnackBar}
+            autoHideDuration={6000}
+            onClose={closeSnackBar}
+            TransitionComponent={Slide}
+          >
+            <Alert
+              onClose={closeSnackBar as any}
+              severity={data ? "success" : "error"}
+            >
+              {data
+                ? "User signed in successfully"
+                : typeof error === "object" && error?.response?.status === 403
+                ? "Please activate your account!"
+                : typeof error === "object" && error?.response?.status === 401
+                ? "Invalid username or password"
+                : "Something went wrong, please try again"}
+            </Alert>
+          </Snackbar>
           <Button
             variant="contained"
+            disabled={loading}
+            type="submit"
             sx={{
               color: "#ffffff",
               background: "#fe6e8b",
@@ -109,7 +193,7 @@ const Login = () => {
               },
             }}
           >
-            Login
+            {loading ? "Signing in..." : "Login"}
           </Button>
         </form>
         <div className={css.actions}>

@@ -125,9 +125,25 @@ Cypress.Commands.add("submitOTPForm" as any, () => {
 Cypress.Commands.add(
   "blurMUIInput" as any,
   function (subject, outerSubject?: any) {
+    cy.get(subject as any)
+      .focus()
+      .blur();
     cy.get(subject as string)
       .parent()
       .click({ force: true });
     cy.get(outerSubject || "body").click({ force: true });
   }
 );
+
+Cypress.on("uncaught:exception", (err) => {
+  // we check if the error is
+  if (
+    err.message.includes("Minified React error #329") ||
+    err.message.includes("Minified React error #418;") ||
+    err.message.includes("Minified React error #423;") ||
+    err.message.includes("hydrating") ||
+    err.message.includes("Hydration")
+  ) {
+    return false;
+  }
+});
