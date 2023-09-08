@@ -1,6 +1,7 @@
 import "@/styles/globals.scss";
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
+import icon from "@/app/favicon.ico";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -10,6 +11,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "GO.Charity Authentication",
   description: "The authentication UI for the GO.Charity platform",
+  icons: { icon: icon.src },
 };
 
 export default function RootLayout({
