@@ -57,6 +57,7 @@ const CustomerTypeSection: FC<SignupSectionBasePropsType> = ({
               activeCustomerType === "donor" ? css.active : undefined
             }`}
             onClick={() => onTypeChange("donor")}
+            data-cy="donor_signup"
           >
             <i className="fa-solid fa-hand-holding-dollar"></i>
             <span>Sign up as a donor</span>
@@ -66,6 +67,7 @@ const CustomerTypeSection: FC<SignupSectionBasePropsType> = ({
               activeCustomerType === "orphanage" ? css.active : undefined
             }`}
             onClick={() => onTypeChange("orphanage")}
+            data-cy="orphanage_signup"
           >
             <i className="fa-solid fa-hands-holding-child"></i>{" "}
             <span>Sign up as an orphanage</span>
@@ -272,9 +274,7 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
             helperText={
               governmentIDInputIsInvalid && "ID input should not be empty"
             }
-            data-cy={
-              governmentIDInputIsInvalid ? "governmentID_error" : "governmentID"
-            }
+            data-cy={"governmentID"}
             value={governmentID}
             onChange={(e) =>
               onInputChange(
@@ -300,7 +300,7 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
           helperText={
             emailInputIsInvalid && "Email input must be a valid email address"
           }
-          data-cy={emailInputIsInvalid ? "email_error" : "email"}
+          data-cy={"email"}
           value={email}
           onChange={(e) =>
             onInputChange(e.target.value, onEmailChange, "emailAddress")
@@ -321,7 +321,7 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
             passwordInputIsInvalid &&
             "Password input should contain at least one uppercase letter, lowercase letter, number, special character, and must be at least 8 characters, but less than 100 characters"
           }
-          data-cy={emailInputIsInvalid ? "password_error" : "password"}
+          data-cy={"password"}
           value={password}
           onChange={(e) =>
             onInputChange(e.target.value, onPasswordChange, "password")
@@ -342,11 +342,7 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
             confirmPasswordInputIsInvalid &&
             "Confirm password input should not be empty and must match password"
           }
-          data-cy={
-            confirmPasswordInputIsInvalid
-              ? "confirmPassword_error"
-              : "confirmPassword"
-          }
+          data-cy={"confirmPassword"}
           value={confirmPassword}
           onChange={(e) =>
             onInputChange(
@@ -479,7 +475,11 @@ const Register = () => {
           {sections.findIndex(
             (section) => currentSection === section.sectionName
           ) > 0 && (
-            <Button variant="outlined" onClick={prevSection}>
+            <Button
+              variant="outlined"
+              onClick={prevSection}
+              data-cy="previous_process"
+            >
               Previous
             </Button>
           )}
@@ -491,6 +491,7 @@ const Register = () => {
               disabled={!currentSectionValidateStatus}
               variant="outlined"
               onClick={nextSection}
+              data-cy="next_process"
             >
               Next
             </Button>

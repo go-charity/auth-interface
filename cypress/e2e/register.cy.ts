@@ -3,7 +3,7 @@ describe("Test cases responsible for the register/sign-up endpoint", () => {
     cy.visit("/register");
 
     // Get the sign up link and click it
-    cy.getByDataCyAttribute("sign_in_link").contains("sign in").as("signin");
+    cy.getByDataCyAttribute("sign_in_link").contains("Sign in").as("signin");
     cy.get("@signin").click();
 
     // Should redirect to the register page
@@ -37,10 +37,14 @@ describe("Test cases responsible for the register/sign-up endpoint", () => {
     cy.get("@next_process").should("be.disabled");
 
     // Click on the 'sign up as a donor' option
-    cy.get("@donor_signup").click();
+    // cy.getByDataCyAttribute("donor_signup").click({ force: true });
+    // cy.get("@donor_signup").click();
+    cy.get("@donor_signup").wait(1000).click();
+
+    cy.wait(1000);
 
     // Option to sign up as a donor should be active/selected, while the option to sign-up as an orphanage should NOT
-    cy.get("@donor_signup")
+    cy.getByDataCyAttribute("donor_signup")
       .should("have.attr", "class")
       .and("match", /active/);
     cy.get("@orphanage_signup")
@@ -52,7 +56,7 @@ describe("Test cases responsible for the register/sign-up endpoint", () => {
     cy.get("@next_process").click();
 
     // After the user chooses to sign-up as a donor and proceeds, he/she should view the procedure to sign-up as a donor, the two options to sign up as either a donor or an orphanage should not be in the DOM
-    cy.contains("You are signing up as a donor");
+    cy.contains("You are signing up as a Donor");
     cy.getByDataCyAttribute("donor_signup").should("not.exist");
     cy.getByDataCyAttribute("orphanage_signup").should("not.exist");
 
@@ -114,10 +118,12 @@ describe("Test cases responsible for the register/sign-up endpoint", () => {
 
     // Get the 'sign in as an orphanage' options and the 'next' button, and click on them
     cy.getByDataCyAttribute("orphanage_signup").as("orphanage_signup").click();
+    cy.wait(1000);
     cy.getByDataCyAttribute("next_process").as("next_process").click();
+    cy.wait(1000);
 
     // Verify we are in the section to sign up as an orphanage
-    cy.contains("You are signing up as an orphanage");
+    cy.contains("You are signing up as an Orphanage");
 
     // Should validate each input field, they should all return error on an invalid input
     cy.getByPlaceholder("Enter government issued ID").as("governmentID").blur();

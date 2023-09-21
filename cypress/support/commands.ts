@@ -125,12 +125,7 @@ Cypress.Commands.add("submitOTPForm" as any, () => {
 Cypress.Commands.add(
   "blurMUIInput" as any,
   function (subject, outerSubject?: any) {
-    cy.get(subject as any)
-      .focus()
-      .blur();
-    cy.get(subject as string)
-      .parent()
-      .click({ force: true });
+    cy.get(subject as string).click();
     cy.get(outerSubject || "body").click({ force: true });
   }
 );

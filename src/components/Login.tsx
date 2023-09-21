@@ -129,7 +129,7 @@ const Login = () => {
             helperText={
               emailInputIsInvalid && "Email input must be a valid email address"
             }
-            data-cy={emailInputIsInvalid ? "email_error" : "email"}
+            data-cy={"email"}
             value={email}
             onChange={(e) => onEmailChange(e.target.value)}
             onBlur={onEmailBlur as any}
@@ -147,7 +147,7 @@ const Login = () => {
             helperText={
               passwordInputIsInvalid && "Password input should not be empty"
             }
-            data-cy={emailInputIsInvalid ? "password_error" : "password"}
+            data-cy={"password"}
             value={password}
             onChange={(e) => onPasswordChange(e.target.value)}
             onBlur={onPasswordBlur as any}
@@ -188,6 +188,7 @@ const Login = () => {
             variant="contained"
             disabled={loading}
             type="submit"
+            data-cy="submit"
             sx={{
               color: "#ffffff",
               background: "#fe6e8b",

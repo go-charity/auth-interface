@@ -7,4 +7,7 @@ export default defineConfig({
       // implement node event listeners here
     },
   },
+  env: {
+    AUTH_BACKEND_HOST: "http://localhost:5000",
+  },
 });

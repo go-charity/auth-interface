@@ -1,0 +1,257 @@
+.register-page {
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.register-page .register-section {
+  width: 100%;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-direction: row-reverse;
+  padding: 2rem;
+}
+.register-page .register-section .left {
+  position: relative;
+  min-width: 500px;
+  max-width: 500px;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 1rem;
+  flex-direction: column;
+}
+.register-page .register-section .left span {
+  color: white;
+  text-align: right;
+}
+.register-page .register-section .left span.badge {
+  font-size: 12px;
+  text-transform: uppercase;
+  border-radius: 20px;
+  padding: 5px 10px;
+  background-color: rgba(255, 227, 231, 0.2);
+}
+.register-page .register-section .left span:nth-of-type(2) {
+  font-size: 36px;
+  font-weight: bold;
+  font-family: "arial black";
+  text-transform: uppercase;
+}
+.register-page .register-section .right {
+  position: relative;
+  padding: 2rem 1rem;
+  min-width: 500px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(138, 17, 60, 0.4);
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-direction: column;
+}
+.register-page .register-section .right .logo_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+.register-page .register-section .right .logo_container span {
+  text-transform: uppercase;
+  font-size: 18px;
+  color: #8a113c;
+}
+.register-page .register-section .right .sections-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  flex-direction: column;
+}
+.register-page .register-section .right .sections-container > * {
+  width: 100%;
+}
+.register-page .register-section .right > .actions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.register-page .register-section .right > .actions button {
+  color: #f83b66;
+  border-color: #ffa2b3;
+}
+.register-page .register-section .right > .actions button:hover {
+  background: rgba(255, 162, 179, 0.2);
+}
+.register-page .register-section .right > .actions button[disabled] {
+  border-color: lightgray;
+  color: lightgray;
+  cursor: no-drop;
+}
+.register-page .register-section .right > .link_container {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+.register-page .register-section .right > .link_container .forgot_password {
+  cursor: pointer;
+}
+.register-page .register-section .right > .link_container a {
+  color: #f83b66;
+}
+.register-page .register-section .bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: url(../assets/images/donation-bg-2.jpg);
+  width: 100vw;
+  height: 100vh;
+  background-position: top right;
+  z-index: -1;
+}
+.register-page .register-section .bg::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(138, 17, 60, 0.4);
+}
+@media (max-width: 1080px) {
+  .register-page .register-section {
+    flex-direction: column;
+  }
+  .register-page .register-section .left {
+    display: none;
+  }
+}
+@media (max-width: 530px) {
+  .register-page .register-section .right {
+    min-width: 280px;
+    width: 90vw;
+  }
+  .register-page .register-section .right form > * {
+    width: 100%;
+  }
+}
+@media (max-height: 720px) {
+  .register-page .register-section {
+    justify-content: start;
+    min-height: 100vh;
+    height: auto;
+  }
+  .register-page .register-section .bg {
+    height: 100%;
+  }
+}
+
+.customer-type-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-direction: column;
+  width: 100%;
+}
+.customer-type-section h2 {
+  color: #8a113c;
+  text-align: center;
+}
+.customer-type-section .customer_type_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+.customer-type-section .customer_type_container .customer_type {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-direction: column;
+  padding: 1rem;
+  background: transparent;
+  border: 1px solid #ffa2b3;
+  border-radius: 5px;
+  width: 200px;
+  min-height: 200px;
+  cursor: pointer;
+  transition: 200ms;
+}
+.customer-type-section .customer_type_container .customer_type i {
+  font-size: 50px;
+  color: #ffa2b3;
+  transition: 200ms;
+  pointer-events: none;
+}
+.customer-type-section .customer_type_container .customer_type span {
+  color: #8a113c;
+  font-size: 16px;
+  text-align: center;
+  display: block;
+  width: 100%;
+  transition: 200ms;
+  pointer-events: none;
+}
+.customer-type-section .customer_type_container .customer_type:hover {
+  transform: scale(1.05);
+}
+.customer-type-section .customer_type_container .customer_type.active {
+  background: #ffa2b3;
+}
+.customer-type-section .customer_type_container .customer_type.active i {
+  color: #8a113c;
+}
+.customer-type-section .customer_type_container .customer_type.active span {
+  color: white;
+}
+
+.signup_form_section {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  flex-direction: column;
+}
+.signup_form_section h2 {
+  color: #8a113c;
+  text-align: center;
+}
+.signup_form_section > * {
+  width: 80%;
+  max-width: 500px;
+}
+.signup_form_section .action {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: auto;
+}
+.signup_form_section .action button {
+  color: #f83b66;
+  border-color: #ffa2b3;
+}
+.signup_form_section .action button:hover {
+  background: rgba(255, 162, 179, 0.2);
+}
+.signup_form_section .action button[disabled] {
+  border-color: lightgray;
+  color: lightgray;
+  cursor: no-drop;
+}/*# sourceMappingURL=Register.module.css.map */
