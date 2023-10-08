@@ -145,10 +145,8 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
 
   const {
     value: tagline,
-    isValid: taglineisValid,
     onChange: onTaglineChange,
     onBlur: onTaglineBlur,
-    reset: resetTagline,
   } = useInput<string>({
     validateFunction: (_) => true,
     defaultValue: "",
@@ -216,7 +214,7 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
   const onMetadataInputChange = (
     value: string,
     changeHandler: Function,
-    property: "fullname" | "phone_number" | "tagline"
+    property: "fullname" | "phone_number" | "tagline" | "countryCode"
   ) => {
     changeHandler(value);
 
@@ -333,6 +331,10 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
     onGovernmentIDChange(signupDetails.governmentIssuedID);
     onEmailChange(signupDetails.emailAddress);
     onPasswordChange(signupDetails.password);
+    onFullnameChange(signupDetails.metadata.fullname);
+    onPhoneNumberChange(signupDetails.metadata.phone_number);
+    onTaglineChange(signupDetails.metadata.tagline);
+    onCountryCodeChange(signupDetails.metadata.countryCode);
   }, []);
 
   return (
@@ -423,7 +425,13 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
             disablePortal
             id="country-codes"
             value={countryCode as any}
-            onChange={(_, data) => onCountryCodeChange(data?.code)}
+            onChange={(_, data) =>
+              onMetadataInputChange(
+                data?.code,
+                onCountryCodeChange,
+                "countryCode"
+              )
+            }
             options={country_codes2}
             className={css.auto_complete}
             onBlur={onCountryCodeBlur as any}
@@ -485,7 +493,7 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
             inputProps={{ style: { color: "#8a113c" } }}
             InputLabelProps={{ style: { color: "#8a113c" } }}
             data-cy={"tagline"}
-            value={fullname}
+            value={tagline}
             onChange={(e) =>
               onMetadataInputChange(e.target.value, onTaglineChange, "tagline")
             }
@@ -656,6 +664,7 @@ const Register = () => {
       fullname: undefined,
       phone_number: undefined,
       tagline: undefined,
+      countryCode: undefined,
     },
   });
   const [currentSection, setCurrentSection] =

@@ -9,6 +9,7 @@ export type SignupDetailsType = {
     fullname: string | undefined;
     phone_number: string | undefined;
     tagline?: string;
+    countryCode: string | undefined;
   };
 };
 
