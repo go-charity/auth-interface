@@ -11,6 +11,7 @@
         // position: absolute;
         height: 100%;
         @include flex(center, center, 2rem, row-reverse);
+        // @include flex(start, center, 2rem, row-reverse);
         padding: 2rem;
         .left {
             position: relative;
@@ -191,6 +192,16 @@
     & > * {
         width: 80%;
         max-width: 500px;
+    }
+    .phone_number_container {
+        @include flex(center, start, 1rem);
+        width: 80%;
+        .input {
+            flex: 0.6;
+        }
+        .auto_complete {
+            flex: 0.5;
+        }
     }
     .action {
         width: 100%;

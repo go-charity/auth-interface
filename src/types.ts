@@ -5,6 +5,11 @@ export type SignupDetailsType = {
   emailAddress: string | undefined;
   password: string | undefined;
   governmentIssuedID?: string;
+  metadata: {
+    fullname: string | undefined;
+    phone_number: string | undefined;
+    tagline?: string;
+  };
 };
 
 export type SignupSectionNames = "customerType" | "signupForm";
@@ -23,4 +28,16 @@ export type SignupSectionBasePropsType = {
 export type OTPConfigType = {
   email: string;
   mode: "login" | "registeration" | "changePassword";
+};
+
+export type CountryCodeAutoCompleteType = {
+  country: string;
+  label: string;
+  iso: string;
+};
+
+export type CountryCode2AutoCompleteType = {
+  label: string;
+  code: string;
+  iso: string;
 };

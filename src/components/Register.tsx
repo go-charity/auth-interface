@@ -5,16 +5,23 @@ import Image from "next/image";
 import logo from "@/assets/images/logo.png";
 import {
   TextField,
-  Checkbox,
   Button,
   Snackbar,
   Alert,
   Slide,
   SnackbarCloseReason,
+  Autocomplete,
+  FormControl,
+  InputLabel,
+  FilledInput,
+  InputAdornment,
+  FormHelperText,
 } from "@mui/material";
 import Link from "next/link";
 import { useForm, useInput } from "use-manage-form";
 import {
+  CountryCode2AutoCompleteType,
+  CountryCodeAutoCompleteType,
   CustomerTypeType,
   SignupDetailsType,
   SignupSectionBasePropsType,
@@ -23,8 +30,8 @@ import {
 import { SignUpSectionClass } from "@/utils/utils";
 import { useRouter } from "next/navigation";
 import useAjaxRequest from "use-ajax-request";
-import axios from "axios";
 import { authBackendInstance } from "@/utils/interceptors";
+import { country_codes, country_codes2 } from "@/utils/data.json";
 
 const CustomerTypeSection: FC<SignupSectionBasePropsType> = ({
   signupDetails,
@@ -84,6 +91,9 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
 }) => {
   const router = useRouter();
   const [showSnackBar, setShowSnackBar] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
   const {
     value: governmentID,
@@ -94,6 +104,53 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
     reset: resetGovernmentID,
   } = useInput<string>({
     validateFunction: (value) => (value ? true : false && value?.trim() != ""),
+    defaultValue: "",
+  });
+
+  const {
+    value: fullname,
+    isValid: fullnameisValid,
+    inputIsInValid: fullnameInputIsInvalid,
+    onChange: onFullnameChange,
+    onBlur: onFullnameBlur,
+    reset: resetFullname,
+  } = useInput<string>({
+    validateFunction: (value) => (value ? value?.trim() != "" : false),
+    defaultValue: "",
+  });
+
+  const {
+    value: phoneNumber,
+    isValid: phoneNumberisValid,
+    inputIsInValid: phoneNumberInputIsInvalid,
+    onChange: onPhoneNumberChange,
+    onBlur: onPhoneNumberBlur,
+    reset: resetPhoneNumber,
+  } = useInput<string>({
+    validateFunction: (value) => (value ? value[0] !== "0" : false),
+    defaultValue: "",
+  });
+
+  const {
+    value: countryCode,
+    isValid: countryCodeisValid,
+    inputIsInValid: countryCodeInputIsInvalid,
+    onChange: onCountryCodeChange,
+    onBlur: onCountryCodeBlur,
+    reset: resetCountryCode,
+  } = useInput<string>({
+    validateFunction: (value) => (value ? value?.trim() !== "" : false),
+    defaultValue: "",
+  });
+
+  const {
+    value: tagline,
+    isValid: taglineisValid,
+    onChange: onTaglineChange,
+    onBlur: onTaglineBlur,
+    reset: resetTagline,
+  } = useInput<string>({
+    validateFunction: (_) => true,
     defaultValue: "",
   });
 
@@ -156,18 +213,41 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
       }));
   };
 
+  const onMetadataInputChange = (
+    value: string,
+    changeHandler: Function,
+    property: "fullname" | "phone_number" | "tagline"
+  ) => {
+    changeHandler(value);
+
+    if (Object.hasOwn(signupDetails.metadata, property))
+      updateSignUpDetails((prevValues) => ({
+        ...prevValues,
+        metadata: {
+          ...prevValues.metadata,
+          [property]: value,
+        },
+      }));
+  };
+
   const { formIsValid, executeBlurHandlers, reset } = useForm({
     blurHandlers: [
       onEmailBlur,
       onGovernmentIDBlur,
       onPasswordBlur,
       onConfirmPasswordBlur,
+      onFullnameBlur,
+      onPhoneNumberBlur,
+      onCountryCodeBlur,
     ],
     resetHandlers: [
       resetGovernmentID,
       resetEmail,
       resetPassword,
       resetConfirmPassword,
+      resetFullname,
+      resetPhoneNumber,
+      resetCountryCode,
     ],
     validateOptions: () =>
       (signupDetails.customertype === "orphanage"
@@ -175,7 +255,10 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
         : true) &&
       emailisValid &&
       passwordisValid &&
-      confirmPasswordisValid,
+      confirmPasswordisValid &&
+      fullnameisValid &&
+      countryCodeisValid &&
+      phoneNumberisValid,
   });
 
   const {
@@ -195,6 +278,11 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
         password: window.btoa(password as string),
         government_ID: governmentID || "",
         user_type: signupDetails.customertype,
+        metadata: {
+          fullname: fullname,
+          phone_number: `${countryCode}${phoneNumber}`,
+          tagline: tagline,
+        },
       },
     },
   });
@@ -308,6 +396,104 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
           onBlur={onEmailBlur as any}
         />
         <TextField
+          id="fullname"
+          name="name"
+          label="Name *"
+          placeholder={
+            signupDetails.customertype === "donor"
+              ? "Enter your name"
+              : "Enter the name of the orphanage"
+          }
+          variant="filled"
+          type="text"
+          inputProps={{ style: { color: "#8a113c" } }}
+          InputLabelProps={{ style: { color: "#8a113c" } }}
+          error={fullnameInputIsInvalid}
+          helperText={fullnameInputIsInvalid && "Name input must not be empty"}
+          data-cy={"fullname"}
+          value={fullname}
+          onChange={(e) =>
+            onMetadataInputChange(e.target.value, onFullnameChange, "fullname")
+          }
+          onBlur={onFullnameBlur as any}
+        />
+
+        <div className={css.phone_number_container}>
+          <Autocomplete
+            disablePortal
+            id="country-codes"
+            value={countryCode as any}
+            onChange={(_, data) => onCountryCodeChange(data?.code)}
+            options={country_codes2}
+            className={css.auto_complete}
+            onBlur={onCountryCodeBlur as any}
+            renderOption={(params, data) => (
+              <li {...params}>
+                {data.label}&nbsp;{data.code}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Code"
+                name="country-code"
+                variant="filled"
+                error={countryCodeInputIsInvalid}
+                helperText={
+                  countryCodeInputIsInvalid &&
+                  "Please enter a valid country code"
+                }
+              />
+            )}
+          />
+          <TextField
+            id="phone_number"
+            name="phone_number"
+            label="Phone number *"
+            placeholder="Enter your phone number"
+            variant="filled"
+            type="tel"
+            className={css.input}
+            inputProps={{ style: { color: "#8a113c" } }}
+            InputLabelProps={{ style: { color: "#8a113c" } }}
+            error={phoneNumberInputIsInvalid}
+            helperText={
+              phoneNumberInputIsInvalid &&
+              "Phone number input must not be empty, must not begin with '0'"
+            }
+            data-cy={"phone_number"}
+            value={phoneNumber}
+            onChange={(e) =>
+              onMetadataInputChange(
+                e.target.value,
+                onPhoneNumberChange,
+                "phone_number"
+              )
+            }
+            onBlur={onPhoneNumberBlur as any}
+          />
+        </div>
+
+        {signupDetails.customertype === "orphanage" && (
+          <TextField
+            id="tagline"
+            name="tagline"
+            label="Tagline"
+            placeholder={"Enter the tagline of the orphanage"}
+            variant="filled"
+            type="text"
+            inputProps={{ style: { color: "#8a113c" } }}
+            InputLabelProps={{ style: { color: "#8a113c" } }}
+            data-cy={"tagline"}
+            value={fullname}
+            onChange={(e) =>
+              onMetadataInputChange(e.target.value, onTaglineChange, "tagline")
+            }
+            onBlur={onTaglineBlur as any}
+          />
+        )}
+
+        {/* <TextField
           id="password"
           name="password"
           label="Password *"
@@ -327,8 +513,47 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
             onInputChange(e.target.value, onPasswordChange, "password")
           }
           onBlur={onPasswordBlur as any}
-        />
-        <TextField
+        /> */}
+
+        <FormControl variant="filled">
+          <InputLabel htmlFor="password" style={{ color: "#8a113c" }}>
+            Password *
+          </InputLabel>
+          <FilledInput
+            id="password"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Enter your password"
+            inputProps={{ style: { color: "#8a113c" } }}
+            error={passwordInputIsInvalid}
+            data-cy={"password"}
+            value={password}
+            onChange={(e) =>
+              onInputChange(e.target.value, onPasswordChange, "password")
+            }
+            onBlur={onPasswordBlur as any}
+            endAdornment={
+              <InputAdornment position="end">
+                <i
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  style={{ cursor: "pointer" }}
+                  className={`fa-solid ${
+                    showPassword ? "fa-eye-slash" : "fa-eye"
+                  }`}
+                />
+              </InputAdornment>
+            }
+          />
+          {passwordInputIsInvalid && (
+            <FormHelperText style={{ color: "red" }}>
+              Password input should contain at least one uppercase letter,
+              lowercase letter, number, special character, and must be at least
+              8 characters, but less than 100 characters
+            </FormHelperText>
+          )}
+        </FormControl>
+
+        {/* <TextField
           id="confirmPassword"
           name="confirmPassword"
           label="Confirm password *"
@@ -352,30 +577,71 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
             )
           }
           onBlur={onConfirmPasswordBlur as any}
-        />
-        <Snackbar
-          open={showSnackBar}
-          autoHideDuration={6000}
-          onClose={closeSnackBar}
-          TransitionComponent={Slide}
-        >
-          <Alert
-            onClose={closeSnackBar as any}
-            severity={data ? "success" : "error"}
-          >
-            {data
-              ? "User created in successfully"
-              : typeof error === "object" && error?.response?.status === 409
-              ? `User already exists!`
-              : "Something went wrong, please try again"}
-          </Alert>
-        </Snackbar>
+        /> */}
+
+        <FormControl variant="filled">
+          <InputLabel htmlFor="password" style={{ color: "#8a113c" }}>
+            Confirm password *
+          </InputLabel>
+          <FilledInput
+            id="confirm-password"
+            type={showConfirmPassword ? "text" : "password"}
+            name="confirm_password"
+            placeholder="Re-enter your password"
+            inputProps={{ style: { color: "#8a113c" } }}
+            error={confirmPasswordInputIsInvalid}
+            data-cy={"confirmPassword"}
+            value={confirmPassword}
+            onChange={(e) =>
+              onInputChange(
+                e.target.value,
+                onConfirmPasswordChange,
+                "confirmPassword"
+              )
+            }
+            onBlur={onConfirmPasswordBlur as any}
+            endAdornment={
+              <InputAdornment position="end">
+                <i
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  style={{ cursor: "pointer" }}
+                  className={`fa-solid ${
+                    showConfirmPassword ? "fa-eye-slash" : "fa-eye"
+                  }`}
+                />
+              </InputAdornment>
+            }
+          />
+          {confirmPasswordInputIsInvalid && (
+            <FormHelperText style={{ color: "red" }}>
+              Confirm password input should not be empty and must match password
+            </FormHelperText>
+          )}
+        </FormControl>
+
         <div className={css.action}>
           <Button variant="outlined" type="submit" disabled={loading}>
             {loading ? "Signing up..." : "Continue"}
           </Button>
         </div>
       </form>
+      <Snackbar
+        open={showSnackBar}
+        autoHideDuration={6000}
+        onClose={closeSnackBar}
+        TransitionComponent={Slide}
+      >
+        <Alert
+          onClose={closeSnackBar as any}
+          severity={data ? "success" : "error"}
+        >
+          {data
+            ? "User created in successfully"
+            : typeof error === "object" && error?.response?.status === 409
+            ? `User already exists!`
+            : "Something went wrong, please try again"}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
@@ -386,6 +652,11 @@ const Register = () => {
     emailAddress: undefined,
     password: undefined,
     governmentIssuedID: undefined,
+    metadata: {
+      fullname: undefined,
+      phone_number: undefined,
+      tagline: undefined,
+    },
   });
   const [currentSection, setCurrentSection] =
     useState<SignupSectionNames>("customerType");
