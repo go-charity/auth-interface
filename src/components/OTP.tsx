@@ -98,7 +98,9 @@ const OTP = () => {
     verifyOTPOnServerRequestBody.otp = window.btoa(OTPValue as string);
     await verifyOTPOnServer(() => {
       if (otpMode === "login" || otpMode === "registeration")
-        router.replace("/");
+        router.replace(
+          process.env.NEXT_PUBLIC_ORPHANAGE_ACCOUNT_CLIENT_DOMAIN || "/"
+        );
       //TODO: Implement algorithm for if mode was set to 'changePassword'
     });
     setShowValidatedOTPSnackBar(true);
