@@ -7,7 +7,10 @@ export const authBackendInstance = axios.create({
 
 authBackendInstance.interceptors.request.use(
   (config) => {
-    config.headers["Api-key"] = window.btoa("fe132312b2fb42bebb044162ef40e3ce");
+    process.env.NEXT_PUBLIC_AUTH_BACKEND_KEY &&
+      (config.headers["Api-key"] = window.btoa(
+        process.env.NEXT_PUBLIC_AUTH_BACKEND_KEY
+      ));
     return config;
   },
   (error) => {
