@@ -1,34 +1,28 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# AUTH-SERVER
 
-## Getting Started
+This is the web interface microservice built with Next Js & Typescript for the authentication interface which is responsible for authenticating and authorizing the user's access to the application
 
-First, run the development server:
+## HOW TO USE
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+- **Run the project directly on your system**:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+  > To run this project directly on your system you will need [**Node.Js**](https://nodejs.org/en/download) version **16.15.0** or higher
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+  - Run `git clone https://github.com/go-charity/auth-interface.git`
+  - Run `npm i -f`
+  - Run `npm run build`
+  - Run `npm run dev`
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- **Run the project using Docker**:
 
-## Learn More
+  > To run this project as a container you will need [**Docker**](https://www.docker.com/products/docker-desktop/)
 
-To learn more about Next.js, take a look at the following resources:
+  - Run `git clone https://github.com/go-charity/auth-interface.git`
+  - Run `docker build -t gocharity/auth-interface:latest .`
+  - Run `docker run -p 5000:5000 -it -d gocharity/auth-interface:latest`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- **Test this project**:
+  > To test this project directly on your system you will need [**Node.Js**](https://nodejs.org/en/download) version **16.15.0** or higher
+  - Run `git clone https://github.com/go-charity/auth-interface.git`
+  - Run `npm i -f`
+  - Run `npm test`

@@ -3,6 +3,7 @@ import axios from "axios";
 export const authBackendInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_AUTH_BACKEND_HOST,
   withCredentials: true,
+  timeout: 200 * 1000,
 });
 
 authBackendInstance.interceptors.request.use(
