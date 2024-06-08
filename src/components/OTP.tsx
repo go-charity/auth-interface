@@ -19,6 +19,8 @@ import { authBackendInstance } from "@/utils/interceptors";
 import { useTimer } from "use-timer";
 
 const OTP = () => {
+  const orphanage_dashboard =
+    process.env.NEXT_PUBLIC_ORPHANAGE_ACCOUNT_CLIENT_DOMAIN;
   const {
     value: OTPValue,
     onChange: onOTPChange,
@@ -69,7 +71,11 @@ const OTP = () => {
     loading: verifyingOTP,
     data: verifiedOTP,
     error: errorVerifyingOTP,
-  } = useAjaxRequest<string>({
+  } = useAjaxRequest<{
+    access_token: string;
+    refresh_token: string;
+    user_id: string;
+  }>({
     instance: authBackendInstance,
     options: {
       url: `/v1/otp/verify`,
@@ -96,10 +102,12 @@ const OTP = () => {
   };
   const verifyOTP = async () => {
     verifyOTPOnServerRequestBody.otp = window.btoa(OTPValue as string);
-    await verifyOTPOnServer(() => {
+    await verifyOTPOnServer((res) => {
       if (otpMode === "login" || otpMode === "registeration")
         router.replace(
-          process.env.NEXT_PUBLIC_ORPHANAGE_ACCOUNT_CLIENT_DOMAIN || "/"
+          orphanage_dashboard
+            ? `${orphanage_dashboard}/${res.data.user_id}`
+            : "/"
         );
       //TODO: Implement algorithm for if mode was set to 'changePassword'
     });

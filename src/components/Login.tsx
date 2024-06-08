@@ -20,6 +20,8 @@ import { authBackendInstance } from "@/utils/interceptors";
 
 const Login = () => {
   const router = useRouter();
+  const orphanage_dashboard =
+    process.env.NEXT_PUBLIC_ORPHANAGE_ACCOUNT_CLIENT_DOMAIN;
   const [showSnackBar, setShowSnackBar] = useState(false);
   const {
     value: email,
@@ -56,6 +58,7 @@ const Login = () => {
   } = useAjaxRequest<{
     access_token: string;
     refresh_token: string;
+    user_id: string;
   }>({
     instance: authBackendInstance,
     options: {
@@ -89,7 +92,9 @@ const Login = () => {
           setShowSnackBar(true);
           reset();
           router.replace(
-            process.env.NEXT_PUBLIC_ORPHANAGE_ACCOUNT_CLIENT_DOMAIN || "/"
+            orphanage_dashboard
+              ? `${orphanage_dashboard}/${res.data.user_id}`
+              : "/"
           );
         }
       },
