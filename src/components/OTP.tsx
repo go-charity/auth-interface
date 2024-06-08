@@ -104,11 +104,12 @@ const OTP = () => {
     verifyOTPOnServerRequestBody.otp = window.btoa(OTPValue as string);
     await verifyOTPOnServer((res) => {
       if (otpMode === "login" || otpMode === "registeration")
-        router.replace(
-          orphanage_dashboard
-            ? `${orphanage_dashboard}/orphanage/${res.data.user_id}`
-            : "/"
-        );
+        // router.replace(
+        //   orphanage_dashboard
+        //     ? `${orphanage_dashboard}/orphanage/${res.data.user_id}`
+        //     : "/"
+        // );
+        window.open(`${orphanage_dashboard}/orphanage/${res.data.user_id}`);
       //TODO: Implement algorithm for if mode was set to 'changePassword'
     });
     setShowValidatedOTPSnackBar(true);
