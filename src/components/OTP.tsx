@@ -144,7 +144,7 @@ const OTP = () => {
     <div className={css["otp-section"]}>
       <div className={css.left}>
         <a
-          href="https://go-charity.vercel.app"
+          href={`${process.env.NEXT_PUBLIC_GOCHARITY_DOMAIN}`}
           target="_blank"
           className={css.logo_container}
         >

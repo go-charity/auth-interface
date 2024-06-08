@@ -88,8 +88,8 @@ const Login = () => {
         if (res?.status === 200) {
           setShowSnackBar(true);
           reset();
-          router.push(
-            "/" /*`https://dashboard.${process.env.NEXT_PUBLIC_API_DOMAIN}.net.ng`*/
+          router.replace(
+            process.env.NEXT_PUBLIC_ORPHANAGE_ACCOUNT_CLIENT_DOMAIN || "/"
           );
         }
       },
