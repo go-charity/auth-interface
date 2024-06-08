@@ -9,8 +9,8 @@ export const authBackendInstance = axios.create({
 
 authBackendInstance.interceptors.request.use(
   (config) => {
-    const access_token = getCookie("access_token");
-    const refresh_token = getCookie("refresh_token");
+    const access_token = getCookie("otp_access_token");
+    const refresh_token = getCookie("otp_refresh_token");
 
     process.env.NEXT_PUBLIC_AUTH_BACKEND_KEY &&
       (config.headers["Api-key"] = window.btoa(
