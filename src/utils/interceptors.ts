@@ -12,6 +12,9 @@ authBackendInstance.interceptors.request.use(
     const access_token = getCookie("otp_access_token");
     const refresh_token = getCookie("otp_refresh_token");
 
+    console.log("access token", access_token);
+    console.log("refresh token", refresh_token);
+
     process.env.NEXT_PUBLIC_AUTH_BACKEND_KEY &&
       (config.headers["Api-key"] = window.btoa(
         process.env.NEXT_PUBLIC_AUTH_BACKEND_KEY
