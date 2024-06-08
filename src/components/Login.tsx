@@ -93,13 +93,22 @@ const Login = () => {
           reset();
           router.replace(
             orphanage_dashboard
-              ? `${orphanage_dashboard}/${res.data.user_id}`
+              ? `${orphanage_dashboard}/orphanage/${res.data.user_id}`
               : "/"
           );
         }
       },
       (err) => {
         setShowSnackBar(true);
+        window.sessionStorage.setItem(
+          "otpConfig",
+          window.btoa(
+            JSON.stringify({
+              email: email,
+              mode: "login",
+            })
+          )
+        );
         if (err?.response?.status === 403) router.push("/otp");
       }
     );

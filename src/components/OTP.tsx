@@ -106,7 +106,7 @@ const OTP = () => {
       if (otpMode === "login" || otpMode === "registeration")
         router.replace(
           orphanage_dashboard
-            ? `${orphanage_dashboard}/${res.data.user_id}`
+            ? `${orphanage_dashboard}/orphanage/${res.data.user_id}`
             : "/"
         );
       //TODO: Implement algorithm for if mode was set to 'changePassword'
