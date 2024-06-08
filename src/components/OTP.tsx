@@ -109,7 +109,10 @@ const OTP = () => {
         //     ? `${orphanage_dashboard}/orphanage/${res.data.user_id}`
         //     : "/"
         // );
-        window.open(`${orphanage_dashboard}/orphanage/${res.data.user_id}`);
+        window.open(
+          `${orphanage_dashboard}/orphanage/${res.data.user_id}`,
+          "_blank"
+        );
       //TODO: Implement algorithm for if mode was set to 'changePassword'
     });
     setShowValidatedOTPSnackBar(true);

@@ -96,7 +96,10 @@ const Login = () => {
           //     ? `${orphanage_dashboard}/orphanage/${res.data.user_id}`
           //     : "/"
           // );
-          window.open(`${orphanage_dashboard}/orphanage/${res.data.user_id}`)
+          window.open(
+            `${orphanage_dashboard}/orphanage/${res.data.user_id}`,
+            "_blank"
+          );
         }
       },
       (err) => {
