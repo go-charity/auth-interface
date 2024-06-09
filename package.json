@@ -20,6 +20,7 @@
     "cypress": "^12.17.4",
     "dotenv": "^16.3.1",
     "next": "13.4.19",
+    "nextjs-toploader": "^1.6.12",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sass": "^1.66.1",
@@ -27,5 +28,8 @@
     "use-ajax-request": "^2.0.7",
     "use-manage-form": "^2.1.1",
     "use-timer": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/nprogress": "^0.2.3"
   }
 }
