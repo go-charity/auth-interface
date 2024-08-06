@@ -1,4 +1,4 @@
-# AUTH-SERVER
+# AUTH-CLIENT
 
 This is the web interface microservice built with Next Js & Typescript for the authentication interface which is responsible for authenticating and authorizing the user's access to the application
 
