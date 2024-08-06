@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-client-deployment
+  labels:
+    obj: deployment
+    app: auth-client
+spec:
+  selector:
+    matchLabels:
+      obj: pod
+      app: auth-client
+  replicas: 1
+  template:
+    metadata:
+      name: auth-client-pod
+      labels:
+        obj: pod
+        app: auth-client
+    spec:
+      containers:
+      - name: auth-client-container
+        image: gocharity/auth-client:v4
+        resources:
+          requests:
+            memory: 10Mi
+            cpu: 150m
+          limits:
+            memory: 20Mi
+            cpu: 250m
+        env:
+        - name: NEXT_PUBLIC_AUTH_BACKEND_HOST
+          value: auth-server-service.default:5000
+        - name: NEXT_PUBLIC_API_DOMAIN
+          value: auth-client-service.default
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-client-service
+  labels:
+    obj: service
+    app: auth-client
+spec:
+  selector:
+    obj: pod
+    app: auth-client
+  ports:
+  - port: 4000
+    targetPort: 3000
+    protocol: "TCP"
+  type: LoadBalancer
