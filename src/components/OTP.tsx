@@ -64,7 +64,7 @@ const OTP = () => {
       headers: { mode: "login" },
       data: sendOTPToServerBody,
     },
-  });
+  } as any);
 
   const {
     sendRequest: verifyOTPOnServer,
@@ -83,7 +83,7 @@ const OTP = () => {
       headers: { mode: "login" },
       data: verifyOTPOnServerRequestBody,
     },
-  });
+  } as any);
 
   const sendOTP = async () => {
     if (!creatingOTP && status === "STOPPED")

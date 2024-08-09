@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE: gocharity/auth-client
-      GKE_CLUSTER: gocharity-cluster
+      GKE_CLUSTER: ${{vars.CLUSTER}}
       GKE_ZONE: us-central1
     steps:
       - name: Chackout

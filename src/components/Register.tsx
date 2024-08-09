@@ -283,7 +283,7 @@ const SignUpForm: FC<SignupSectionBasePropsType> = ({
         },
       },
     },
-  });
+  } as any);
 
   const closeSnackBar = (_: any, reason: SnackbarCloseReason) => {
     if (reason === "clickaway") return;

@@ -66,7 +66,7 @@ const Login = () => {
       method: "POST",
       data: loginUserRequestBody,
     },
-  });
+  } as any);
 
   const { formIsValid, executeBlurHandlers, reset } = useForm({
     blurHandlers: [onEmailBlur, onPasswordBlur],
