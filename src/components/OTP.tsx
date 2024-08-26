@@ -39,7 +39,7 @@ const OTP = () => {
 
   const { time, start, reset, status } = useTimer({
     timerType: "DECREMENTAL",
-    initialTime: 300,
+    initialTime: 60,
     endTime: 0,
   });
   const router = useRouter();
