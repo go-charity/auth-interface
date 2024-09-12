@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: auth-client-container
-        image: gocharity/auth-client:v4
+        image: gocharity/auth-client:latest
         resources:
           requests:
             memory: 10Mi
@@ -28,11 +28,6 @@ spec:
           limits:
             memory: 20Mi
             cpu: 250m
-        env:
-        - name: NEXT_PUBLIC_AUTH_BACKEND_HOST
-          value: auth-server-service.default:5000
-        - name: NEXT_PUBLIC_API_DOMAIN
-          value: auth-client-service.default
 
 ---
 apiVersion: v1
@@ -47,7 +42,7 @@ spec:
     obj: pod
     app: auth-client
   ports:
-  - port: 4000
+  - port: 3001
     targetPort: 3000
     protocol: "TCP"
   type: LoadBalancer
